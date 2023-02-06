@@ -1,3 +1,7 @@
+<?php
+    session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,13 +15,27 @@
 
 <body>
     <nav class="navbar">
-        <h1 class="logo">Sports</h1>
+        <h1 class="logo">Sports Community Hub</h1>
         <ul class="nav-link" id="nav-link">
             <li class="active"><a href="#">Home</a></li>
             <li><a href="#">Tours</a></li>
             <li><a href="#">Explore</a></li>
             <li><a href="#">About</a></li>
-            <li class="ctn"><a href="#" id="register">Register</a></li>
+            <?php
+                if($_SESSION['email'])
+                {
+            ?>
+            <li class="ctn"><?php echo $_SESSION['email'] ?></li> <li class="ctn"><a href="logout.php" id="logout">Logout</a></li>
+            <?php 
+                }
+                else {
+            ?>
+                    <li class="ctn"><a href="#" id="register">Sign Up</a></li>
+                    <li class="ctn"><a href="#" id="login">Login</a></li>
+            <?php
+                }
+            ?>
+
         </ul>
         <img src="./img/menu-btn.png" alt="" id="menu-btn" class="menu-btn">
     </nav>
@@ -26,7 +44,7 @@
             <h2>Explore The New World</h2>
             <div class="line"></div>
             <h1>SPORTS COMMUNITY HUB</h1>
-            <a href="#" class="ctn">Learn More</a>
+            <a href="book_event.php" class="ctn">Book Now</a>
         </div>
 
         <div id='login-form' class="login-page">
@@ -35,8 +53,8 @@
                 <div class="form">
                     <form class='login-form', action="validate.php", method="post">
                         <h1 class="main-heading">Login Form</h1>
-				        <input type="text"name='emailid' placeholder="Email ID", required/>
-				        <input type="password" name='password' placeholder="password", required/>
+				        <input type="email" name='emailid' placeholder="Email ID" required/>
+				        <input type="password" name='password' placeholder="Password" required/>
 				        <button>LOGIN</button>
 				    </form>
                 </div>
@@ -46,15 +64,16 @@
             <div class="form-box1">
                <span onclick="document.getElementById('register-form').style.display='none'" class="close">&times;</span>
                 <div class="form1">
-                    <form class='register-form', action="registration.php", method="get">
+                    <form class='register-form' action="registration.php", method="post">
                         <h1 class="main-heading">Sign Up</h1>
 				        <input type="text" name='firstName' placeholder="First Name" required/>
                         <input type="text" name='lastName' placeholder="Last Name" required/>
 				        <input type="email" name='emailId' placeholder="Email Id" required/>
                         <input type="text" name='mobileNumber' placeholder="Mobile Number" pattern="[0-9]{10}" required/>
-				        <input type="password" name='password' placeholder="Password" required/>
-				        <input type="password" name='confirmPassword' placeholder="Confirm Password" required/>
-				        <button>REGISTER</button>
+				        <input type="password" id='pass' name='password' placeholder="Password" required/>
+				        <input type="password" id='confirmPass' name='confirmPassword' placeholder="Confirm Password" onkeyup="validatePassword()" required/>
+                        <span id="wrong_pass_alert"></span>
+				        <button id="submit" type="submit">REGISTER</button>
                     </form>
                 </div>
             </div>
@@ -123,12 +142,40 @@
         })
 
         var register = document.getElementById('register');
+        var registrationForm = document.getElementById('register-form');
 
-        var loginForm = document.getElementById('register-form');
+        var login = document.getElementById('login');
+        var loginForm = document.getElementById('login-form');
         
         register.addEventListener('click', ()=>{
-            loginForm.style.display = 'block';
+            registrationForm.style.display = 'block';
+            loginForm.style.display = 'none';
         })
+
+
+        login.addEventListener('click', ()=>{
+            loginForm.style.display = 'block';
+            registrationForm.style.display = 'none';
+        })
+
+        function validatePassword() {
+            var password = document.getElementById("pass").value;
+            var confirmPassword = document.getElementById("confirmPass").value;
+
+            if(password != confirmPassword){
+                document.getElementById('wrong_pass_alert').style.color = 'red';
+                document.getElementById('wrong_pass_alert').innerHTML
+                  = '☒ Use same password';
+                document.getElementById('submit').disabled = true;
+                document.getElementById('submit').style.opacity = (0.4);
+            } else {
+                document.getElementById('wrong_pass_alert').style.color = 'green';
+                document.getElementById('wrong_pass_alert').innerHTML =
+                    '🗹 Password Matched';
+                document.getElementById('submit').disabled = false;
+                document.getElementById('submit').style.opacity = (1);
+            }
+        }
 
     </script>
 </body>
